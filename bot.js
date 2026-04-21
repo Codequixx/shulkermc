@@ -4,7 +4,7 @@ function startBot() {
   const bot = mineflayer.createBot({
     host: 'play.shulkermc.fun',
     port: 25565,
-    username: 'Blazerunner3542',
+    username: 'Joonathanjodd',
     version: '1.20.1'
   })
 
