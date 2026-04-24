@@ -2,9 +2,9 @@ const mineflayer = require('mineflayer')
 
 function startBot() {
   const bot = mineflayer.createBot({
-    host: 'play.shulkermc.fun',
+    host: 'play.hayfun.xyz',
     port: 25565,
-    username: 'Joonathanjodd',
+    username: 'Nitishkumarcm',
     version: '1.20.1'
   })
 
@@ -19,15 +19,32 @@ function startBot() {
 
     await wait(10000)
 
-    // 🌐 Join Lifesteal
-    console.log('➡️ Joining Lifesteal...')
-    bot.chat('/server lifesteal')
-
-    await wait(10000)
-
-    console.log('🟢 AFK mode started')
+    // 🧭 Directly open selector
+    console.log('🧭 Opening server selector...')
+    bot.activateItem()
   })
 
+  // ================= WINDOW HANDLER =================
+  bot.on('windowOpen', async (window) => {
+    const title = JSON.stringify(window.title).toLowerCase()
+    console.log('📦 Window:', title)
+
+    if (title.includes('server')) {
+      console.log('➡️ Clicking Lifesteal (slot 11)...')
+
+      try {
+        await bot.clickWindow(11, 0, 0)
+      } catch {
+        console.log('❌ Failed clicking slot 11')
+      }
+
+      await wait(8000)
+
+      console.log('🟢 AFK mode started')
+    }
+  })
+
+  // ================= CHAT LOGS =================
   bot.on('message', (msg) => {
     console.log(msg.toAnsi())
   })
