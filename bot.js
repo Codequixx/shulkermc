@@ -4,7 +4,7 @@ function startBot() {
   const bot = mineflayer.createBot({
     host: 'play.hayfun.xyz',
     port: 25565,
-    username: 'Blazerunner3542',
+    username: 'Joonathanjodd',
     version: '1.20.1'
   })
 
