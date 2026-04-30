@@ -8,32 +8,43 @@ function startBot() {
     version: '1.20.1'
   })
 
+  const PASSWORD = 'Jeet001'
+
   function wait(ms) {
     return new Promise(res => setTimeout(res, ms))
   }
 
+  let loggedIn = false
+
   // ================= LOGS =================
   bot.on('login', () => console.log('✅ Connected'))
-  bot.on('spawn', async () => {
+
+  bot.on('spawn', () => {
     console.log('🚀 Spawned')
-
-    await wait(10000)
-
-    // 🌐 Join Lifesteal
-    console.log('➡️ Joining Lifesteal...')
-    bot.chat('/server lifesteal')
-
-    await wait(10000)
-
-    console.log('🟢 AFK mode started')
   })
 
-  bot.on('message', (msg) => {
+  // ================= SMART LOGIN =================
+  bot.on('message', async (msg) => {
+    const text = msg.toString()
+
     console.log(msg.toAnsi())
-  })
 
-  bot.on('chat', (username, message) => {
-    console.log(`[${username}] ${message}`)
+    // detect login prompt
+    if (text.toLowerCase().includes('login') && !loggedIn) {
+      console.log('🔐 Detected login prompt, sending login...')
+
+      bot.chat(`/login ${PASSWORD}`)
+      loggedIn = true
+
+      await wait(6000)
+
+      console.log('➡️ Joining Lifesteal...')
+      bot.chat('/server lifesteal')
+
+      await wait(10000)
+
+      console.log('🟢 AFK mode started')
+    }
   })
 
   // ================= ANTI-AFK =================
