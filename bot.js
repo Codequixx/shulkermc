@@ -23,13 +23,35 @@ function startBot() {
     console.log('🚀 Spawned')
   })
 
+  // ================= DROP FUNCTION =================
+  async function dropAllItems() {
+    const items = bot.inventory.items()
+
+    if (items.length === 0) {
+      console.log('📭 Inventory empty')
+      return
+    }
+
+    console.log('📦 Dropping all items...')
+
+    for (const item of items) {
+      try {
+        await bot.tossStack(item)
+        await wait(200)
+      } catch {
+        console.log('❌ Failed dropping item')
+      }
+    }
+
+    console.log('✅ Inventory cleared')
+  }
+
   // ================= SMART LOGIN =================
   bot.on('message', async (msg) => {
     const text = msg.toString()
 
     console.log(msg.toAnsi())
 
-    // detect login prompt
     if (text.toLowerCase().includes('login') && !loggedIn) {
       console.log('🔐 Detected login prompt, sending login...')
 
@@ -44,6 +66,11 @@ function startBot() {
       await wait(10000)
 
       console.log('🟢 AFK mode started')
+
+      // 🔥 START AUTO DROP LOOP
+      setInterval(() => {
+        dropAllItems()
+      }, 60000)
     }
   })
 
