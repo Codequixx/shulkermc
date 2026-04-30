@@ -14,13 +14,32 @@ function startBot() {
     return new Promise(res => setTimeout(res, ms))
   }
 
-  let loggedIn = false
-
   // ================= LOGS =================
   bot.on('login', () => console.log('✅ Connected'))
-
-  bot.on('spawn', () => {
+  bot.on('spawn', async () => {
     console.log('🚀 Spawned')
+
+    // 🔥 WAIT FOR SERVER LOAD
+    await wait(12000)
+
+    // 🔐 LOGIN (FORCED)
+    console.log('🔐 Sending login...')
+    bot.chat(`/login ${PASSWORD}`)
+
+    await wait(6000)
+
+    // 🌐 JOIN SERVER
+    console.log('➡️ Joining Lifesteal...')
+    bot.chat('/server lifesteal')
+
+    await wait(8000)
+
+    console.log('🟢 AFK mode started')
+
+    // ================= AUTO DROP LOOP =================
+    setInterval(() => {
+      dropAllItems()
+    }, 60000)
   })
 
   // ================= DROP FUNCTION =================
@@ -46,32 +65,13 @@ function startBot() {
     console.log('✅ Inventory cleared')
   }
 
-  // ================= SMART LOGIN =================
-  bot.on('message', async (msg) => {
-    const text = msg.toString()
-
+  // ================= CHAT LOGS =================
+  bot.on('message', (msg) => {
     console.log(msg.toAnsi())
+  })
 
-    if (text.toLowerCase().includes('login') && !loggedIn) {
-      console.log('🔐 Detected login prompt, sending login...')
-
-      bot.chat(`/login ${PASSWORD}`)
-      loggedIn = true
-
-      await wait(6000)
-
-      console.log('➡️ Joining Lifesteal...')
-      bot.chat('/server lifesteal')
-
-      await wait(10000)
-
-      console.log('🟢 AFK mode started')
-
-      // 🔥 START AUTO DROP LOOP
-      setInterval(() => {
-        dropAllItems()
-      }, 60000)
-    }
+  bot.on('chat', (username, message) => {
+    console.log(`[${username}] ${message}`)
   })
 
   // ================= ANTI-AFK =================
