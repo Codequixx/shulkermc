@@ -2,9 +2,9 @@ const mineflayer = require('mineflayer')
 
 function startBot() {
   const bot = mineflayer.createBot({
-    host: 'play.shulkermc.fun',
+    host: 'play.mangosmp.in',
     port: 25565,
-    username: 'Joonathanjodd',
+    username: 'Harryputtar391',
     version: '1.20.1'
   })
 
