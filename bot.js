@@ -1,10 +1,13 @@
 const mineflayer = require('mineflayer')
 
+let reconnecting = false
+
 function startBot() {
+
   const bot = mineflayer.createBot({
-    host: 'play.mangosmp.in',
-    port: 25565,
-    username: 'Harryputtar391',
+    host: 'java.shulkermc.fun',
+    port: 19132,
+    username: 'Joonathanjodd',
     version: '1.20.1'
   })
 
@@ -14,15 +17,21 @@ function startBot() {
     return new Promise(res => setTimeout(res, ms))
   }
 
+  let started = false
+  let dropLoop = null
+
   // ================= LOGS =================
   bot.on('login', () => console.log('✅ Connected'))
-  bot.on('spawn', async () => {
+
+  bot.once('spawn', async () => {
+    if (started) return
+    started = true
+
     console.log('🚀 Spawned')
 
-    // 🔥 WAIT FOR SERVER LOAD
     await wait(12000)
 
-    // 🔐 LOGIN (FORCED)
+    // 🔐 LOGIN
     console.log('🔐 Sending login...')
     bot.chat(`/login ${PASSWORD}`)
 
@@ -37,53 +46,61 @@ function startBot() {
     console.log('🟢 AFK mode started')
 
     // ================= AUTO DROP LOOP =================
-    setInterval(() => {
-      dropAllItems()
+    dropLoop = setInterval(async () => {
+      const items = bot.inventory.items()
+
+      if (items.length === 0) {
+        console.log('📭 Inventory empty')
+        return
+      }
+
+      console.log('📦 Dropping all items...')
+
+      for (const item of items) {
+        try {
+          await bot.tossStack(item)
+          await wait(200)
+        } catch {}
+      }
+
+      console.log('✅ Inventory cleared')
+
     }, 60000)
   })
-
-  // ================= DROP FUNCTION =================
-  async function dropAllItems() {
-    const items = bot.inventory.items()
-
-    if (items.length === 0) {
-      console.log('📭 Inventory empty')
-      return
-    }
-
-    console.log('📦 Dropping all items...')
-
-    for (const item of items) {
-      try {
-        await bot.tossStack(item)
-        await wait(200)
-      } catch {
-        console.log('❌ Failed dropping item')
-      }
-    }
-
-    console.log('✅ Inventory cleared')
-  }
 
   // ================= CHAT LOGS =================
   bot.on('message', (msg) => {
     console.log(msg.toAnsi())
   })
 
-  bot.on('chat', (username, message) => {
-    console.log(`[${username}] ${message}`)
-  })
+  // ================= ANTI AFK =================
+  const afkLoop = setInterval(() => {
+    if (!bot.entity) return
 
-  // ================= ANTI-AFK =================
-  setInterval(() => {
     bot.setControlState('jump', true)
-    setTimeout(() => bot.setControlState('jump', false), 300)
+
+    setTimeout(() => {
+      bot.setControlState('jump', false)
+    }, 300)
+
   }, 60000)
 
-  // ================= AUTO RECONNECT =================
+  // ================= CLEAN RECONNECT =================
   bot.on('end', () => {
+
+    clearInterval(afkLoop)
+
+    if (dropLoop) clearInterval(dropLoop)
+
+    if (reconnecting) return
+    reconnecting = true
+
     console.log('🔄 Reconnecting in 5s...')
-    setTimeout(startBot, 5000)
+
+    setTimeout(() => {
+      reconnecting = false
+      startBot()
+    }, 5000)
   })
 
   bot.on('error', () => {})
