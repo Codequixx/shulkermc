@@ -5,10 +5,10 @@ let reconnecting = false
 function startBot() {
 
   const bot = mineflayer.createBot({
-    host: 'java.shulkermc.fun',
-    port: 19132,
+    host: 'play.blastday.in',
+    port: 25565,
     username: 'Joonathanjodd',
-    version: '1.21.11'
+    version: '1.20.1'
   })
 
   const PASSWORD = 'Jeet001'
