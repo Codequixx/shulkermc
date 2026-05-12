@@ -8,7 +8,7 @@ function startBot() {
     host: 'java.shulkermc.fun',
     port: 19132,
     username: 'Nitishkumarcm',
-    version: '1.20.1'
+    version: '1.21.11'
   })
 
   const PASSWORD = 'Jeet001'
